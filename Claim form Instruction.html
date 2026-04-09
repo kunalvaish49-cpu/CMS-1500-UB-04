@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Medical Billing Reference — CMS-1500 & UB-04</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS — PROFESSIONAL MEDICAL BILLING UI
+══════════════════════════════════════════════ */
+:root {
+  /* CMS palette — deep navy/cobalt */
+  --cms-50:   hsl(218,80%,97%);
+  --cms-100:  hsl(218,70%,92%);
+  --cms-200:  hsl(218,65%,84%);
+  --cms-300:  hsl(218,65%,72%);
+  --cms-500:  hsl(218,76%,48%);
+  --cms-600:  hsl(218,76%,40%);
+  --cms-700:  hsl(218,76%,30%);
+  --cms-900:  hsl(218,76%,14%);
+  --cms-glow: hsl(218,85%,62%);
+
+  /* UB palette — rich violet */
+  --ub-50:    hsl(270,65%,97%);
+  --ub-100:   hsl(270,58%,91%);
+  --ub-200:   hsl(270,55%,82%);
+  --ub-300:   hsl(270,55%,68%);
+  --ub-500:   hsl(270,68%,46%);
+  --ub-600:   hsl(270,68%,38%);
+  --ub-700:   hsl(270,68%,28%);
+  --ub-900:   hsl(270,68%,13%);
+  --ub-glow:  hsl(270,78%,62%);
+
+  /* Semantic status colors */
+  --req-bg:   hsl(142,60%,95%);
+  --req-text: hsl(142,60%,28%);
+  --req-border:hsl(142,50%,75%);
+  --cond-bg:  hsl(38,90%,95%);
+  --cond-text:hsl(38,80%,28%);
+  --cond-border:hsl(38,70%,72%);
+  --opt-bg:   hsl(220,30%,96%);
+  --opt-text: hsl(220,20%,45%);
+  --opt-border:hsl(220,25%,80%);
+  --blank-bg: hsl(0,0%,96%);
+  --blank-text:hsl(0,0%,46%);
+
+  /* Neutrals */
+  --ink:      #0a0d18;
+  --slate:    #1a1f35;
+  --mid:      #374060;
+  --muted:    #64708e;
+  --subtle:   #94a0ba;
+  --border:   #dde1ef;
+  --border-light: #eef0f8;
+  --surface:  #f5f7fc;
+  --surface2: #edf0f8;
+  --white:    #ffffff;
+
+  /* Active theme (set by JS) */
+  --active-50:   var(--cms-50);
+  --active-100:  var(--cms-100);
+  --active-200:  var(--cms-200);
+  --active-300:  var(--cms-300);
+  --active-500:  var(--cms-500);
+  --active-600:  var(--cms-600);
+  --active-700:  var(--cms-700);
+  --active-900:  var(--cms-900);
+  --active-glow: var(--cms-glow);
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,.05);
+  --shadow-sm:  0 1px 4px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 18px rgba(0,0,0,.09), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,.13), 0 4px 12px rgba(0,0,0,.07);
+  --shadow-xl:  0 24px 64px rgba(0,0,0,.20), 0 8px 20px rgba(0,0,0,.10);
+}
+
+/* Dark mode */
+body.dark {
+  --ink:          #eef0fc;
+  --slate:        #d8ddf5;
+  --mid:          #b0b8d8;
+  --muted:        #818baa;
+  --subtle:       #5a6480;
+  --border:       #252b45;
+  --border-light: #1e2340;
+  --surface:      #0c0f1e;
+  --surface2:     #101426;
+  --white:        #131728;
+}
+
+/* ══════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  transition: background .35s, color .35s;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════
+   NOISE TEXTURE OVERLAY
+══════════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════════════
+   HERO HEADER — PROFESSIONAL EDITION
+══════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  padding: 48px 32px 40px;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--white) 0%, var(--surface) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% -10%, hsl(218,80%,55%,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 5%, hsl(270,70%,55%,.08) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+body.dark .hero {
+  background: linear-gradient(180deg, hsl(225,30%,10%) 0%, var(--surface) 100%);
+}
+
+body.dark .hero::before {
+  background:
+    radial-gradient(ellipse 70% 50% at 15% -10%, hsl(218,80%,55%,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 5%, hsl(270,70%,55%,.14) 0%, transparent 55%);
+}
+
+.hero-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, hsl(218,60%,95%), hsl(270,60%,95%));
+  border: 1px solid hsl(218,40%,82%);
+  color: var(--cms-700);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+
+body.dark .hero-badge {
+  background: linear-gradient(135deg, hsl(218,40%,15%), hsl(270,40%,15%));
+  border-color: hsl(218,40%,25%);
+  color: var(--cms-300);
+}
+
+.hero-badge::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--cms-500);
+  animation: pulse-dot 2.4s ease infinite;
+}
+
+.hero-stat-pills {
+  display: flex;
+  gap: 6px;
+}
+
+.hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--mid);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-xs);
+}
+body.dark .hero-stat { background: var(--surface2); }
+
+.hero-stat-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.hero-stat-dot.blue { background: var(--cms-500); }
+.hero-stat-dot.purple { background: var(--ub-500); }
+.hero-stat-dot.green { background: #22c55e; }
+
+@keyframes pulse-dot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.5); }
+  50%      { box-shadow: 0 0 0 4px rgba(59,130,246,0); }
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.85rem, 4.5vw, 3rem);
+  line-height: 1.14;
+  color: var(--ink);
+  letter-spacing: -.025em;
+  margin-bottom: 12px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--cms-500), var(--ub-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto 28px;
+  line-height: 1.68;
+  font-weight: 400;
+}
+
+/* Quick stats row */
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 12px;
+  margin-bottom: 28px;
+  padding: 16px 24px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: var(--shadow-sm);
+}
+body.dark .hero-stats-row { background: var(--surface2); }
+
+.hero-stat-item {
+  text-align: center;
+}
+.hero-stat-item .num {
+  display: block;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.hero-stat-item .lbl {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 600;
+  color: var(--muted);
+}
+.hero-stats-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+
+/* ══════════════════════════════════════════════
+   FORM SELECTOR TABS
+══════════════════════════════════════════════ */
+.tab-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.tab-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px 12px 16px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--mid);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.34,1.4,.64,1);
+  box-shadow: var(--shadow-sm);
+  letter-spacing: -.01em;
+}
+body.dark .tab-btn { background: var(--surface2); }
+
+.tab-btn .tab-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: transform .28s;
+}
+
+.tab-btn.cms-tab .tab-icon { background: linear-gradient(135deg,var(--cms-100),var(--cms-50)); color: var(--cms-700); }
+.tab-btn.ub-tab  .tab-icon { background: linear-gradient(135deg,var(--ub-100),var(--ub-50));  color: var(--ub-700);  }
+
+.tab-btn.active {
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.tab-btn.cms-tab.active { background: linear-gradient(135deg, var(--cms-700), var(--cms-500)); }
+.tab-btn.ub-tab.active  { background: linear-gradient(135deg, var(--ub-700),  var(--ub-500));  }
+
+.tab-btn.active .tab-icon {
+  background: rgba(255,255,255,.18);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.tab-btn:not(.active):hover {
+  border-color: var(--active-300);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.tab-label-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: .7;
+  letter-spacing: .02em;
+}
+
+/* ══════════════════════════════════════════════
+   TOOLBAR
+══════════════════════════════════════════════ */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245,247,252,.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  transition: background .35s;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+
+body.dark .toolbar {
+  background: rgba(12,15,30,.92);
+  border-color: var(--border);
+  box-shadow: 0 2px 12px rgba(0,0,0,.3);
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 440px;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  transition: border-color .2s, box-shadow .2s, background .35s;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--active-500);
+  box-shadow: 0 0 0 3px hsla(var(--active-h,220deg),70%,55%,.18);
+}
+
+.search-input::placeholder { color: var(--muted); }
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.icon-btn {
+  height: 36px;
+  min-width: 36px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+}
+body.dark .icon-btn { background: var(--surface2); }
+
+.icon-btn:hover {
+  border-color: var(--active-500);
+  color: var(--active-500);
+  background: var(--active-50);
+}
+
+.result-count {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  background: var(--surface2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+/* ══════════════════════════════════════════════
+   MAIN CONTENT PANELS
+══════════════════════════════════════════════ */
+.panel { display: none; animation: fadeUp .4s ease; }
+.panel.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════
+   SECTION HEADERS
+══════════════════════════════════════════════ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 14px;
+}
+
+.section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--active-600);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label::before {
+  content: '';
+  display: block;
+  width: 14px; height: 2.5px;
+  background: linear-gradient(90deg, var(--active-500), var(--active-300));
+  border-radius: 2px;
+}
+
+/* ══════════════════════════════════════════════
+   FORM OVERVIEW CARD (with image)
+══════════════════════════════════════════════ */
+.overview-card {
+  margin: 0 24px 28px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: var(--shadow-md);
+  transition: background .35s, border-color .35s;
+}
+
+@media (max-width: 768px) {
+  .overview-card { grid-template-columns: 1fr; }
+}
+
+.overview-info {
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.overview-info h2 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.75rem;
+  letter-spacing: -.02em;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.overview-info p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.overview-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--active-50);
+  color: var(--active-700);
+  border: 1px solid var(--active-100);
+}
+
+.overview-image {
+  position: relative;
+  background: linear-gradient(135deg, var(--active-50), var(--active-100));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 260px;
+}
+
+.overview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 24px;
+  cursor: zoom-in;
+  transition: transform .3s ease;
+}
+
+.overview-image img:hover { transform: scale(1.03); }
+
+.img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--active-500);
+  opacity: .6;
+  padding: 40px;
+  text-align: center;
+}
+
+.img-placeholder svg { opacity: .5; }
+.img-placeholder p { font-size: 13px; font-weight: 500; }
+
+.zoom-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+/* ══════════════════════════════════════════════
+   DATA TABLE — PROFESSIONAL GRADE
+══════════════════════════════════════════════ */
+.table-wrap {
+  margin: 0 24px 40px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+/* CMS header */
+#cms-panel thead tr {
+  background: linear-gradient(135deg, hsl(218,76%,18%), hsl(218,76%,26%));
+}
+
+/* UB header */
+#ub-panel thead tr {
+  background: linear-gradient(135deg, hsl(270,68%,17%), hsl(270,68%,24%));
+}
+
+body.dark #cms-panel thead tr {
+  background: linear-gradient(135deg, hsl(218,60%,12%), hsl(218,60%,18%));
+}
+body.dark #ub-panel thead tr {
+  background: linear-gradient(135deg, hsl(270,55%,12%), hsl(270,55%,18%));
+}
+
+th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.80);
+  white-space: nowrap;
+}
+
+th:first-child { width: 120px; }
+th:nth-child(2) { width: 210px; }
+th:nth-child(4) { width: 190px; }
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr {
+  background: var(--white);
+  transition: background .12s;
+}
+
+body.dark tbody tr { background: var(--white); }
+
+tbody tr:nth-child(even) {
+  background: hsl(218,30%,99.2%);
+}
+
+body.dark tbody tr:nth-child(even) {
+  background: hsl(225,20%,10%);
+}
+
+tbody tr:hover {
+  background: var(--active-50) !important;
+  transition: background .1s;
+}
+
+/* Section divider rows */
+tr.section-divider td {
+  background: linear-gradient(90deg, var(--active-50), transparent) !important;
+  border-left: 3px solid var(--active-500);
+  padding: 10px 16px 10px 13px;
+  border-bottom: 1px solid var(--active-100) !important;
+}
+
+/* Box ID badge */
+.box-id {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 66px;
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--white);
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+.panel#cms-panel .box-id {
+  background: linear-gradient(135deg, var(--cms-700), var(--cms-500));
+}
+
+.panel#ub-panel .box-id {
+  background: linear-gradient(135deg, var(--ub-700), var(--ub-500));
+}
+
+.field-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--slate);
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.field-desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Status badge on field name */
+.status-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 1.5px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1.6;
+  border: 1px solid;
+}
+.status-req    { background:var(--req-bg);  color:var(--req-text);  border-color:var(--req-border); }
+.status-cond   { background:var(--cond-bg); color:var(--cond-text); border-color:var(--cond-border); }
+.status-opt    { background:var(--opt-bg);  color:var(--opt-text);  border-color:var(--opt-border); }
+.status-blank  { background:var(--blank-bg);color:var(--blank-text);border-color:#d0d0d0; }
+
+/* Copy button */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all .15s;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.copy-btn:hover { background: var(--active-50); color: var(--active-600); border-color: var(--active-300); }
+.copy-btn.copied { background: var(--req-bg); color: var(--req-text); border-color: var(--req-border); }
+
+/* Thumbnail */
+.thumb-cell { vertical-align: middle; }
+
+.thumb {
+  display: block;
+  width: 168px;
+  height: 94px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  cursor: zoom-in;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s;
+  background: var(--active-50);
+}
+
+.thumb:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--active-300);
+}
+
+.no-img {
+  width: 168px; height: 94px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--border);
+  font-size: 10.5px;
+  color: var(--subtle);
+  text-align: center;
+  line-height: 1.5;
+  padding: 8px;
+}
+
+/* Hidden row */
+tr.hidden { display: none; }
+
+/* ══════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════ */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+
+.modal.open {
+  display: flex;
+  animation: modalIn .2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 88vh;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.6);
+  background: #0b0d14;
+  animation: modalSlide .25s cubic-bezier(.34,1.4,.64,1);
+}
+
+@keyframes modalSlide {
+  from { transform: scale(.9) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);     opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(255,255,255,.05);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.modal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.8);
+  letter-spacing: .03em;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: background .15s;
+}
+
+.modal-btn:hover { background: rgba(255,255,255,.2); }
+.modal-btn.close-btn { background: rgba(220,50,50,.25); }
+.modal-btn.close-btn:hover { background: rgba(220,50,50,.5); }
+
+.modal-img-wrap {
+  overflow: auto;
+  max-height: calc(88vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.modal-img-wrap:active { cursor: grabbing; }
+
+#modalImg {
+  max-width: 88vw;
+  max-height: 78vh;
+  display: block;
+  transform-origin: center;
+  transition: transform .2s;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.modal-footer {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,.65);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════
+   DARK MODE TOGGLE
+══════════════════════════════════════════════ */
+.dark-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: var(--ink);
+  color: var(--surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-xl);
+  z-index: 500;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+body.dark .dark-toggle {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+
+.dark-toggle:hover { transform: scale(1.1) rotate(8deg); }
+
+/* ══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
+footer {
+  text-align: center;
+  padding: 28px 24px;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  transition: background .35s;
+}
+body.dark footer { background: var(--white); }
+
+footer strong { color: var(--ink); }
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .table-wrap { margin: 0 12px 32px; }
+  .overview-card { margin: 0 12px 20px; }
+  .thumb { width: 120px; height: 68px; }
+  th:last-child, td:last-child { display: none; }
+  .hero { padding: 40px 16px 32px; }
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ══════════════════════════════════════════════
+   PRINT STYLES
+══════════════════════════════════════════════ */
+@media print {
+  .toolbar, .dark-toggle, .tab-selector, .modal { display: none !important; }
+  .hero { padding: 16px 0 12px; border: none; background: white; }
+  .hero-stats-row { box-shadow: none; border: 1px solid #ddd; }
+  .panel { display: block !important; }
+  .table-wrap { margin: 0 0 24px; box-shadow: none; }
+  .overview-card { box-shadow: none; }
+  .thumb { width: 120px; height: 68px; }
+  body { background: white; }
+  footer { border-top: 1px solid #ddd; }
+}
+
+/* ══════════════════════════════════════════════
+   OVERVIEW CARD UPGRADE
+══════════════════════════════════════════════ */
+.overview-card {
+  position: relative;
+}
+.overview-card::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--active-500), var(--active-300));
+  border-radius: 3px 0 0 3px;
+}
+
+/* Search input focus ring improved */
+.search-input:focus {
+  border-color: var(--active-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--active-500) 15%, transparent);
+}
+
+/* Toolbar border-bottom thicker when scrolled */
+.toolbar.scrolled {
+  box-shadow: 0 4px 20px rgba(0,0,0,.10);
+}
+
+</style>
+</head>
+
+<!-- ═══════════════════════════════════════════ MODAL ═══ -->
+<div class="modal" id="imgModal">
+  <div class="modal-inner">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Form Reference Image</span>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+        <button class="modal-btn" onclick="resetZoom()" title="Reset (100%)">⟳</button>
+        <button class="modal-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="modal-btn close-btn" onclick="closeModal()" title="Close (ESC)">✕</button>
+      </div>
+    </div>
+    <div class="modal-img-wrap">
+      <img id="modalImg" src="" alt="Form reference">
+    </div>
+    <div class="modal-footer">Scroll to zoom · ESC to close · Drag to pan</div>
+  </div>
+</div>
+
+<body>
+
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<header class="hero">
+  <div class="hero-top-bar">
+    <div class="hero-badge">Medical Billing Reference</div>
+    <div class="hero-stat-pills">
+      <span class="hero-stat"><span class="hero-stat-dot blue"></span>CMS-1500</span>
+      <span class="hero-stat"><span class="hero-stat-dot purple"></span>UB-04</span>
+      <span class="hero-stat"><span class="hero-stat-dot green"></span>Interactive</span>
+    </div>
+  </div>
+  <h1>CMS-1500 &amp; <em>UB-04</em><br>Form Field Guide</h1>
+  <p>Complete field-by-field reference for professional medical billing forms. Click any row image to zoom in with the full viewer.</p>
+
+  <div class="hero-stats-row">
+    <div class="hero-stat-item">
+      <span class="num">33</span>
+      <span class="lbl">CMS-1500 Boxes</span>
+    </div>
+    <div class="hero-stats-divider"></div>
+    <div class="hero-stat-item">
+      <span class="num">81</span>
+      <span class="lbl">UB-04 Form Locators</span>
+    </div>
+    <div class="hero-stats-divider"></div>
+    <div class="hero-stat-item">
+      <span class="num">2</span>
+      <span class="lbl">Claim Form Types</span>
+    </div>
+  </div>
+
+  <!-- TAB SELECTOR -->
+  <div class="tab-selector">
+    <button class="tab-btn cms-tab active" id="btn-cms" onclick="switchPanel('cms')">
+      <span class="tab-icon">📋</span>
+      <span>
+        CMS-1500
+        <span class="tab-label-sub">Professional / Physician Claims</span>
+      </span>
+    </button>
+    <button class="tab-btn ub-tab" id="btn-ub" onclick="switchPanel('ub')">
+      <span class="tab-icon">🏥</span>
+      <span>
+        UB-04
+        <span class="tab-label-sub">Institutional / Hospital Claims</span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input
+      class="search-input"
+      id="searchInput"
+      type="text"
+      placeholder="Search box number, field name, or description…"
+      oninput="doSearch()"
+      autocomplete="off">
+  </div>
+  <span class="result-count" id="resultCount"></span>
+  <div class="toolbar-right">
+    <button class="icon-btn" onclick="clearSearch()" title="Clear search (ESC)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="icon-btn" onclick="window.print()" title="Print / Export PDF" style="width:auto;padding:0 12px;font-size:12px;font-weight:600;gap:5px;display:flex;align-items:center;">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ CMS PANEL ═══ -->
+<div class="panel active" id="cms-panel">
+
+  <div class="section-header">
+    <span class="section-label">CMS-1500 Overview</span>
+  </div>
+
+  <div class="overview-card">
+    <div class="overview-info">
+      <h2>CMS-1500 Form</h2>
+      <p>The standard claim form used by non-institutional providers and suppliers to bill Medicare Part B, Medicaid, and most other payers for professional services rendered by physicians and other qualified healthcare professionals.</p>
+      <div class="overview-pills">
+        <span class="pill">Professional Claims</span>
+        <span class="pill">Medicare Part B</span>
+        <span class="pill">Physician Billing</span>
+        <span class="pill">33 Boxes</span>
+      </div>
+    </div>
+    <div class="overview-image">
+      <!-- CMS-1500 overview image — fill in src when available -->
+
+      <img src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/CMS%201500%20Full%20Image.jpg" alt="CMS-1500 Full Form" onclick="openModal(this,'CMS-1500 Form — Full Reference')" style="width:100%;height:100%;object-fit:contain;padding:16px;cursor:zoom-in;transition:transform .3s ease;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <div class="zoom-hint">Click to zoom</div>
+    </div>
+  </div>
+
+  <!-- ── Patient / Insured Section ── -->
+  <div class="section-header">
+    <span class="section-label">Patient &amp; Insurance Information — Boxes 1–13</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="cms-table">
+      <thead>
+        <tr>
+          <th>Box #</th>
+          <th>Field Name</th>
+          <th>Description</th>
+          <th>Reference Image</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><span class="box-id">Box 1</span></td>
+          <td><div class="field-name">Insurance Type<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 1 — Insurance Type">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates the type of health insurance plan and policy (Medicare, Medicaid, TRICARE, CHAMPVA, Group Health Plan, FECA, or Other). Directs how the claim will be processed.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box1%20.jpg" alt="Box 1 — Insurance Type" onclick="openModal(this,'Box 1 — Insurance Type')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 1a</span></td>
+          <td><div class="field-name">Insured ID Number<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 1a — Insured ID Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Patient's policy number, group, or identification number as assigned by the payer. Also called Subscriber ID or Member ID.</div></td>
+
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box1a.jpg" alt="CMS Box 1a — Insured ID Number" onclick="openModal(this,'Box 1a — Insured ID Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 2</span></td>
+          <td><div class="field-name">Patient Name<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 2 — Patient Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Full legal name of the patient (last, first, middle initial). Must match the name the payer has on file — do not enter a preferred name here.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box2.jpg" alt="CMS Box 2 — Patient Name" onclick="openModal(this,'Box 2 — Patient Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 3</span></td>
+          <td><div class="field-name">Patient Birthdate &amp; Sex<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 3 — Patient Birthdate &amp; Sex">⎘ Copy</button></td>
+          <td><div class="field-desc">Patient's date of birth (MM/DD/YYYY) and gender on record with the insurance company.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box3.jpg" alt="CMS Box 3 — Patient Birthdate & Sex" onclick="openModal(this,'Box 3 — Patient Birthdate & Sex')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 4</span></td>
+          <td><div class="field-name">Insured Name<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 4 — Insured Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Name of the policyholder if different from the patient.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box4.jpg" alt="CMS Box 4 — Insured Name" onclick="openModal(this,'Box 4 — Insured Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 5</span></td>
+          <td><div class="field-name">Patient Address<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 5 — Patient Address">⎘ Copy</button></td>
+          <td><div class="field-desc">Full mailing address including city, state, and ZIP code for the patient.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box5.jpg" alt="CMS Box 5 — Patient Address" onclick="openModal(this,'Box 5 — Patient Address')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 6</span></td>
+          <td><div class="field-name">Patient Relationship to Insured<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 6 — Patient Relationship to Insured">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates whether the patient is the insured (self), spouse, child, or other relative of the insured.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box6.jpg" alt="CMS Box 6 — Patient Relationship" onclick="openModal(this,'Box 6 — Patient Relationship to Insured')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 7</span></td>
+          <td><div class="field-name">Insured Address<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 7 — Insured Address">⎘ Copy</button></td>
+          <td><div class="field-desc">Complete only if the address of the insured is different from the patient's address.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box7.jpg" alt="CMS Box 7 — Insured Address" onclick="openModal(this,'Box 7 — Insured Address')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 8</span></td>
+          <td><div class="field-name">Reserved for NUCC Use<span class="status-badge status-blank">Leave Blank</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 8 — Reserved for NUCC Use">⎘ Copy</button></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><div class="no-img">Image Not Added<br>Non Useable</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 9</span></td>
+          <td><div class="field-name">Other Insured Name<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 9 — Other Insured Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Name of another policyholder if secondary insurance exists. Boxes 9-series may be left blank if not applicable.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box9.jpg" alt="CMS Box 9 — Other Insured Name" onclick="openModal(this,'Box 9 — Other Insured Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 9a</span></td>
+          <td><div class="field-name">Other Insured's Policy/Group Number<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 9a — Other Insured's Policy/Group Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Policy or group number of the secondary insurance (complete only if Box 9 is filled).</div></td>
+     <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box9a.jpg" alt="CMS Box 9a — Other Insured Policy Number" onclick="openModal(this,'Box 9a — Other Insured Policy / Group Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 9b</span></td>
+          <td><div class="field-name">Reserved for NUCC Use<span class="status-badge status-blank">Leave Blank</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 9b — Reserved for NUCC Use">⎘ Copy</button></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box9d.jpg" alt="CMS Box 9d — Insurance Plan Name" onclick="openModal(this,'Box 9d — Insurance Plan Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 9c</span></td>
+          <td><div class="field-name">Reserved for NUCC Use<span class="status-badge status-blank">Leave Blank</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 9c — Reserved for NUCC Use">⎘ Copy</button></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box9d.jpg" alt="CMS Box 9d — Insurance Plan Name" onclick="openModal(this,'Box 9d — Insurance Plan Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 9d</span></td>
+          <td><div class="field-name">Insurance Plan Name or Program Name<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 9d — Insurance Plan Name or Program Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Name of secondary insurance plan (complete only if Boxes 9 and 9a were completed).</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box9d.jpg" alt="CMS Box 9d — Insurance Plan Name" onclick="openModal(this,'Box 9d — Insurance Plan Name')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 10a</span></td>
+          <td><div class="field-name">Patient's Condition — Employment<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 10a — Patient's Condition — Employment">⎘ Copy</button></td>
+          <td><div class="field-desc">Specifies whether services are related to employment. Check "NO" if not applicable.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box10abcd.jpg" alt="CMS Box 10 — Patient Condition" onclick="openModal(this,'Box 10 — Patient Condition')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 10b</span></td>
+          <td><div class="field-name">Patient's Condition — Auto Accident<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 10b — Patient's Condition — Auto Accident">⎘ Copy</button></td>
+          <td><div class="field-desc">Specifies if services relate to an auto accident. Check "NO" if not applicable; if yes, include two-letter state abbreviation.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box10abcd.jpg" alt="CMS Box 10 — Patient Condition" onclick="openModal(this,'Box 10 — Patient Condition')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 10c</span></td>
+          <td><div class="field-name">Patient's Condition — Other Accident<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 10c — Patient's Condition — Other Accident">⎘ Copy</button></td>
+          <td><div class="field-desc">Specifies if services relate to another accident. Check "NO" if not applicable.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box10abcd.jpg" alt="CMS Box 10 — Patient Condition" onclick="openModal(this,'Box 10 — Patient Condition')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 10d</span></td>
+          <td><div class="field-name">Claim Codes (NUCC)<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 10d — Claim Codes (NUCC)">⎘ Copy</button></td>
+          <td><div class="field-desc">Used for claim identifiers such as property/casualty case numbers, clinical trial identifiers, or workers' compensation case numbers. Leave blank if not applicable.</div></td>
+          <td class="thumb-cell"><div class="no-img">Image Not Added<br>Non Useable</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 11</span></td>
+          <td><div class="field-name">Insured's Policy Group / FECA Number<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 11 — Insured's Policy Group / FECA Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Primary insured's group or policy number. Leave blank if primary policy is Medicare; otherwise complete (duplicative of Box 1a).</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box11.jpg" alt="CMS Box 11 — Insured Policy Group" onclick="openModal(this,'Box 11 — Insured Policy Group / FECA Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 11a</span></td>
+          <td><div class="field-name">Insured's Birth Date &amp; Sex<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 11a — Insured's Birth Date &amp; Sex">⎘ Copy</button></td>
+          <td><div class="field-desc">Insured's date of birth (MM/DD/YYYY) and gender on record with the insurance company.</div></td>
+       <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box11a.jpg" alt="CMS Box 11a — Insured Birth Date & Sex" onclick="openModal(this,'Box 11a — Insured Birth Date & Sex')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 11b</span></td>
+          <td><div class="field-name">Employer's / School Name<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 11b — Employer's / School Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Employer or school of the insured.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box11d.jpg" alt="CMS Box 11d — Other Health Benefit Plan" onclick="openModal(this,'Box 11d — Other Health Benefit Plan')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 11c</span></td>
+          <td><div class="field-name">Insurance Plan Name or Program Name<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 11c — Insurance Plan Name or Program Name">⎘ Copy</button></td>
+          <td><div class="field-desc">Name of the primary insurance plan.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box11d.jpg" alt="CMS Box 11d — Other Health Benefit Plan" onclick="openModal(this,'Box 11d — Other Health Benefit Plan')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 11d</span></td>
+          <td><div class="field-name">Is There Another Health Benefit Plan?<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 11d — Is There Another Health Benefit Plan?">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicate if the patient has an additional (secondary) insurance policy.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box11d.jpg" alt="CMS Box 11d — Other Health Benefit Plan" onclick="openModal(this,'Box 11d — Other Health Benefit Plan')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 12</span></td>
+          <td><div class="field-name">Patient's / Authorized Person's Signature<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 12 — Patient's / Authorized Person's Signature">⎘ Copy</button></td>
+          <td><div class="field-desc">Authorizes release of medical information. Typically completed with "Signature on File" (SoF) and the date obtained for internal records.</div></td>
+       <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box12.jpg" alt="CMS Box 12 — Patient Signature" onclick="openModal(this,'Box 12 — Patient / Authorized Person Signature')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 13</span></td>
+          <td><div class="field-name">Insured's / Authorized Person's Signature<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 13 — Insured's / Authorized Person's Signature">⎘ Copy</button></td>
+          <td><div class="field-desc">Authorizes payment of benefits to provider. Typically completed with "Signature on File" (SoF) for electronic claims.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box13.jpg" alt="CMS Box 13 — Insured Signature" onclick="openModal(this,'Box 13 — Insured / Authorized Person Signature')"></td>
+        </tr>
+
+        <!-- Provider & Service Information -->
+        <tr class="section-divider">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cms-700);padding:10px 16px;">
+            🩺 Provider &amp; Service Information — Boxes 14–23
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 14</span></td>
+          <td><div class="field-name">Date of Current Illness / Injury / Pregnancy<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 14 — Date of Current Illness / Injury / Pregnancy">⎘ Copy</button></td>
+          <td><div class="field-desc">Date symptoms began, accident occurred, or last menstrual period (LMP).</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box14.jpg" alt="CMS Box 14 — Date of Current Illness" onclick="openModal(this,'Box 14 — Date of Current Illness / Injury / Pregnancy')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 15</span></td>
+          <td><div class="field-name">Other Date<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 15 — Other Date">⎘ Copy</button></td>
+          <td><div class="field-desc">Specify another relevant date (e.g., first consultation, accident date). Leave blank if not applicable.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box15.jpg" alt="CMS Box 15 — Other Date" onclick="openModal(this,'Box 15 — Other Date')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 16</span></td>
+          <td><div class="field-name">Dates Patient Unable to Work<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 16 — Dates Patient Unable to Work">⎘ Copy</button></td>
+          <td><div class="field-desc">Date range the patient was unable to work due to condition, if applicable. Otherwise leave blank.</div></td>
+       <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box16.jpg" alt="CMS Box 16 — Dates Unable to Work" onclick="openModal(this,'Box 16 — Dates Patient Unable to Work')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 17</span></td>
+          <td><div class="field-name">Name of Referring Provider<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 17 — Name of Referring Provider">⎘ Copy</button></td>
+          <td><div class="field-desc">Name of the referring physician or other source.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box17.jpg" alt="CMS Box 17 — Referring Provider Name" onclick="openModal(this,'Box 17 — Name of Referring Provider')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 17a</span></td>
+          <td><div class="field-name">Other ID Number<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 17a — Other ID Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Legacy provider identifiers if required (e.g., UPIN or state license number). Generally left blank.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box17b.jpg" alt="CMS Box 17b — Referring Provider NPI" onclick="openModal(this,'Box 17b — Referring Provider NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 17b</span></td>
+          <td><div class="field-name">Referring Provider NPI<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 17b — Referring Provider NPI">⎘ Copy</button></td>
+          <td><div class="field-desc">NPI (National Provider Identifier) of the referring provider, if applicable.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box17b.jpg" alt="CMS Box 17b — Referring Provider NPI" onclick="openModal(this,'Box 17b — Referring Provider NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 18</span></td>
+          <td><div class="field-name">Hospitalization Dates<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 18 — Hospitalization Dates">⎘ Copy</button></td>
+          <td><div class="field-desc">Admission and Discharge dates if related to this claim.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box18.jpg" alt="CMS Box 18 — Hospitalization Dates" onclick="openModal(this,'Box 18 — Hospitalization Dates')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 19</span></td>
+          <td><div class="field-name">Additional Claim Information<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 19 — Additional Claim Information">⎘ Copy</button></td>
+          <td><div class="field-desc">Extra notes to payer (e.g., unlisted codes, modifiers). Usually blank.</div></td>
+          <td class="thumb-cell"><div class="no-img">Image Not Added<br>Non Useable</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 20</span></td>
+          <td><div class="field-name">Outside Lab? Charges?<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 20 — Outside Lab? Charges?">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates if an outside lab was used and the charges. Mark NO if labs were completed in-house.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box20.jpg" alt="CMS Box 20 — Outside Lab" onclick="openModal(this,'Box 20 — Outside Lab & Charges')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 21</span></td>
+          <td><div class="field-name">Diagnosis / Nature of Illness or Injury<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 21 — Diagnosis / Nature of Illness or Injury">⎘ Copy</button></td>
+          <td><div class="field-desc">ICD-10 (or ICD-9 legacy) diagnosis codes for the encounter. May vary from other diagnoses the patient has on record.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box21.jpg" alt="CMS Box 21 — Diagnosis Codes" onclick="openModal(this,'Box 21 — Diagnosis / Nature of Illness or Injury')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 22</span></td>
+          <td><div class="field-name">Resubmission Code / Original Ref. Number<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 22 — Resubmission Code / Original Ref. Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Enter reference numbers when resubmitting a claim or for a corrected claim.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box22.jpg" alt="CMS Box 22 — Resubmission Code" onclick="openModal(this,'Box 22 — Resubmission Code / Original Ref. Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 23</span></td>
+          <td><div class="field-name">Prior Authorization Number<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 23 — Prior Authorization Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Authorization or referral number assigned by payer, if applicable. Otherwise leave blank.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box23.jpg" alt="Box 23 — Prior Authorization Number" onclick="openModal(this,'Box 23 — Prior Authorization Number')"></td>
+        </tr>
+
+        <!-- Procedures & Charges -->
+        <tr style="background: var(--cms-50) !important;">
+          <td colspan="4" style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cms-700);padding:10px 16px;">
+            Procedures &amp; Charges — Boxes 24a–24j
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24a</span></td>
+          <td><div class="field-name">Date(s) of Service<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24a — Date(s) of Service">⎘ Copy</button></td>
+          <td><div class="field-desc">Start and end dates of service. In many cases start and end dates will be the same.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24a.jpg" alt="Box 24a — Date(s) of Service" onclick="openModal(this,'Box 24a — Date(s) of Service')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24b</span></td>
+          <td><div class="field-name">Place of Service<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24b — Place of Service">⎘ Copy</button></td>
+          <td><div class="field-desc">Two-digit code for service location (office, hospital, telehealth, etc.).</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24b.jpg" alt="Box 24b — Place of Service" onclick="openModal(this,'Box 24b — Place of Service')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24c</span></td>
+          <td><div class="field-name">EMG (Emergency Indicator)<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24c — EMG (Emergency Indicator)">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates if services were an emergency. Generally left blank.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24b.jpg" alt="Box 24b — Place of Service" onclick="openModal(this,'Box 24b — Place of Service')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24d</span></td>
+          <td><div class="field-name">Procedures, Services, or Supplies<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24d — Procedures, Services, or Supplies">⎘ Copy</button></td>
+          <td><div class="field-desc">CPT/HCPCS codes describing services provided (e.g., 90837, 99204). Modifiers are also entered here.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24d.jpg" alt="Box 24d — Procedures / Services / Supplies" onclick="openModal(this,'Box 24d — Procedures / Services / Supplies')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24e</span></td>
+          <td><div class="field-name">Diagnosis Pointer<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24e — Diagnosis Pointer">⎘ Copy</button></td>
+          <td><div class="field-desc">Linked to the diagnosis code in Box 21. Enter the alpha-numeric identifier from Box 21 — not the actual diagnosis code.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24e.jpg" alt="Box 24e — Diagnosis Pointer" onclick="openModal(this,'Box 24e — Diagnosis Pointer')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24f</span></td>
+          <td><div class="field-name">Charges<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24f — Charges">⎘ Copy</button></td>
+          <td><div class="field-desc">Billed charge for each service line to the payer.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24f.jpg" alt="Box 24f — Charges" onclick="openModal(this,'Box 24f — Charges')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24g</span></td>
+          <td><div class="field-name">Days or Units<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24g — Days or Units">⎘ Copy</button></td>
+          <td><div class="field-desc">Number of services, time units, or dosage.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24g.jpg" alt="Box 24g — Days or Units" onclick="openModal(this,'Box 24g — Days or Units')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24h</span></td>
+          <td><div class="field-name">EPSDT / Family Plan<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24h — EPSDT / Family Plan">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates Early &amp; Periodic Screening, Diagnosis, Treatment (EPSDT) or family planning. Often left blank.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24j.jpg" alt="Box 24j — Rendering Provider NPI" onclick="openModal(this,'Box 24j — Rendering Provider NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24i</span></td>
+          <td><div class="field-name">ID Qualifier<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24i — ID Qualifier">⎘ Copy</button></td>
+          <td><div class="field-desc">Legacy qualifier for Box 24j. Generally left blank or filled with "ZZ" to indicate NPI is submitted in Box 24j.</div></td>
+      <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24j.jpg" alt="Box 24j — Rendering Provider NPI" onclick="openModal(this,'Box 24j — Rendering Provider NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 24j</span></td>
+          <td><div class="field-name">Rendering Provider NPI<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 24j — Rendering Provider NPI">⎘ Copy</button></td>
+          <td><div class="field-desc">10-digit NPI of the individual rendering provider.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box24j.jpg" alt="Box 24j — Rendering Provider NPI" onclick="openModal(this,'Box 24j — Rendering Provider NPI')"></td>
+        </tr>
+
+        <!-- Totals & Billing Provider -->
+        <tr class="section-divider">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cms-700);padding:10px 16px;">
+            💰 Totals &amp; Billing Provider — Boxes 25–33b
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 25</span></td>
+          <td><div class="field-name">Federal Tax ID Number<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 25 — Federal Tax ID Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Provider's EIN or SSN used for tax and billing.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box25.jpg" alt="CMS Box 25 — Federal Tax ID" onclick="openModal(this,'Box 25 — Federal Tax ID Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 26</span></td>
+          <td><div class="field-name">Patient's Account Number<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 26 — Patient's Account Number">⎘ Copy</button></td>
+          <td><div class="field-desc">Patient control number or patient ID for internal tracking and charting.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box26.jpg" alt="CMS Box 26 — Patient Account Number" onclick="openModal(this,'Box 26 — Patient Account Number')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 27</span></td>
+          <td><div class="field-name">Accept Assignment?<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 27 — Accept Assignment?">⎘ Copy</button></td>
+          <td><div class="field-desc">Indicates if provider accepts payer's allowed amount as payment in full. Generally checked YES.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box27.jpg" alt="CMS Box 27 — Accept Assignment" onclick="openModal(this,'Box 27 — Accept Assignment')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 28</span></td>
+          <td><div class="field-name">Total Charge<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 28 — Total Charge">⎘ Copy</button></td>
+          <td><div class="field-desc">Total sum of all charges from the service lines entered in the Box 24 series.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box28.jpg" alt="CMS Box 28 — Total Charge" onclick="openModal(this,'Box 28 — Total Charge')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 29</span></td>
+          <td><div class="field-name">Amount Paid<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 29 — Amount Paid">⎘ Copy</button></td>
+          <td><div class="field-desc">Any prior payment by patient or other insurer.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box29.jpg" alt="CMS Box 29 — Amount Paid" onclick="openModal(this,'Box 29 — Amount Paid')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 30</span></td>
+          <td><div class="field-name">Reserved for NUCC Use<span class="status-badge status-blank">Leave Blank</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 30 — Reserved for NUCC Use">⎘ Copy</button></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><div class="no-img">Image Not Added<br>Non Useable</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 31</span></td>
+          <td><div class="field-name">Signature of Physician or Supplier<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 31 — Signature of Physician or Supplier">⎘ Copy</button></td>
+          <td><div class="field-desc">Provider's signature, or "Signature on File" (SOF), which is most common in electronic claim submission.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box31.jpg" alt="CMS Box 31 — Physician Signature" onclick="openModal(this,'Box 31 — Signature of Physician or Supplier')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 32</span></td>
+          <td><div class="field-name">Service Facility Location<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 32 — Service Facility Location">⎘ Copy</button></td>
+          <td><div class="field-desc">Address where services were rendered if not the provider's office. Include the full 9-digit ZIP code to avoid denial or rejection.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box32.jpg" alt="CMS Box 32 — Service Facility" onclick="openModal(this,'Box 32 — Service Facility Location')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 32a</span></td>
+          <td><div class="field-name">Service Facility NPI<span class="status-badge status-cond">Conditional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 32a — Service Facility NPI">⎘ Copy</button></td>
+          <td><div class="field-desc">10-digit NPI of the facility.</div></td>
+         <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box32a.jpg" alt="CMS Box 32a — Facility NPI" onclick="openModal(this,'Box 32a — Service Facility NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 32b</span></td>
+          <td><div class="field-name">Other ID (Legacy)<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 32b — Other ID (Legacy)">⎘ Copy</button></td>
+          <td><div class="field-desc">Secondary ID if required by payer. Usually blank.</div></td>
+        <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box32a.jpg" alt="CMS Box 32a — Facility NPI" onclick="openModal(this,'Box 32a — Service Facility NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 33</span></td>
+          <td><div class="field-name">Billing Provider Info &amp; Phone<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 33 — Billing Provider Info &amp; Phone">⎘ Copy</button></td>
+          <td><div class="field-desc">Provider's billing name, address, and phone number.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box33.jpg" alt="CMS Box 33 — Billing Provider" onclick="openModal(this,'Box 33 — Billing Provider Info & Phone')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 33a</span></td>
+          <td><div class="field-name">Billing Provider NPI<span class="status-badge status-req">Required</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 33a — Billing Provider NPI">⎘ Copy</button></td>
+          <td><div class="field-desc">10-digit NPI of the billing provider.</div></td>
+       <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box33A.jpg" alt="CMS Box 33a — Billing Provider NPI" onclick="openModal(this,'Box 33a — Billing Provider NPI')"></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">Box 33b</span></td>
+          <td><div class="field-name">Other ID (Legacy)<span class="status-badge status-opt">Optional</span></div>
+          <button class="copy-btn" onclick="copyField(this, this.dataset.text)" data-text="Box 33b — Other ID (Legacy)">⎘ Copy</button></td>
+          <td><div class="field-desc">Any other legacy billing IDs. Generally left blank.</div></td>
+          <td class="thumb-cell"><img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/Box33A.jpg" alt="CMS Box 33a — Billing Provider NPI" onclick="openModal(this,'Box 33a — Billing Provider NPI')"></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div><!-- /cms-panel -->
+
+
+<!-- ═══════════════════════════════════════════ UB-04 PANEL ═══ -->
+<div class="panel" id="ub-panel">
+
+  <div class="section-header">
+    <span class="section-label" style="color:var(--ub-500)">UB-04 Overview</span>
+  </div>
+
+  <div class="overview-card" style="--active-50:var(--ub-50);--active-100:var(--ub-100);">
+    <div class="overview-info">
+      <h2>UB-04 Form</h2>
+      <p>The uniform institutional claim form used by hospitals, skilled nursing facilities, and other institutional providers to bill for inpatient, outpatient, and other facility-based services. Managed by the National Uniform Billing Committee (NUBC).</p>
+      <div class="overview-pills" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-700:var(--ub-700);">
+        <span class="pill">Institutional Claims</span>
+        <span class="pill">Hospital Billing</span>
+        <span class="pill">NUBC Standard</span>
+        <span class="pill">FL 1–81</span>
+      </div>
+    </div>
+    	
+<div class="overview-image">
+      <img src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/023c4be2d91a4acf5e8d503559d2fa8880a80c99/UB.jpg" 
+           alt="UB-04 Full Form" 
+           onclick="openModal(this,'UB-04 Form — Full Reference')"
+           style="width:100%;height:100%;object-fit:contain;padding:16px;cursor:zoom-in;transition:transform .3s ease;"
+           onmouseover="this.style.transform='scale(1.03)'"
+           onmouseout="this.style.transform='scale(1)'">
+      <div class="zoom-hint">Click to zoom</div>
+    </div>
+  </div>
+
+
+  <div class="section-header">
+    <span class="section-label" style="color:var(--ub-500)">Form Locators — FL 1 through FL 81</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="ub-table">
+      <thead>
+        <tr>
+          <th>FL #</th>
+          <th>Field Name</th>
+          <th>Description</th>
+          <th>Reference Image</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        
+        <tr class="section-divider" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-500:var(--ub-500);">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ub-700);padding:10px 16px;">
+            🏥 Administrative &amp; Patient Data — FL 1–17
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 1</span></td>
+          <td><div class="field-name">Provider Name, Address</div></td>
+          <td><div class="field-desc">Billing provider's legal name and address.</div></td>
+          <td class="thumb-cell">
+            <div class="thumb-wrap">
+              <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/8194a8064afcdc267902a997b1a8efd8acc0c1f0/FL-1%20UB-04.jpg" alt="UB-04 FL 1" onclick="openModal(this,'FL 1 — Provider Name, Address')">
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 2</span></td>
+          <td><div class="field-name">Pay-to Address</div></td>
+          <td><div class="field-desc">Address where payment is sent.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-2%20UB-04.jpg" alt="UB-04 FL 2" onclick="openModal(this,'FL 2 — Pay-to Address')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 3a/3b</span></td>
+          <td><div class="field-name">Patient Control # / MRN</div></td>
+          <td><div class="field-desc">Internal account number and medical record number.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-3%20UB-04.jpg" alt="UB-04 FL 3" onclick="openModal(this,'FL 3 — Patient Control # / MRN')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 4</span></td>
+          <td><div class="field-name">Type of Bill</div></td>
+          <td><div class="field-desc">Facility type + classification + frequency code.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-4%20UB-04.jpg" alt="UB-04 FL 4" onclick="openModal(this,'FL 4 — Type of Bill')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 5</span></td>
+          <td><div class="field-name">Federal Tax ID</div></td>
+          <td><div class="field-desc">Provider tax ID / EIN.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-5%20UB-04.jpg" alt="UB-04 FL 5" onclick="openModal(this,'FL 5 — Federal Tax ID')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 6</span></td>
+          <td><div class="field-name">Statement Dates</div></td>
+          <td><div class="field-desc">From and through service dates.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-6%20UB-04.jpg" alt="UB-04 FL 6" onclick="openModal(this,'FL 6 — Statement Dates')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 7</span></td>
+          <td><div class="field-name">Reserved</div></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><div class="no-img">Not used</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 8–8B</span></td>
+          <td><div class="field-name">Patient Name</div></td>
+          <td><div class="field-desc">Name of the patient.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-8%20UB-04.jpg" alt="UB-04 FL 8" onclick="openModal(this,'FL 8 — Patient Name')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 9</span></td>
+          <td><div class="field-name">Patient Address</div></td>
+          <td><div class="field-desc">Mailing address.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-9%20UB-04.jpg" alt="UB-04 FL 9" onclick="openModal(this,'FL 9 — Patient Address')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 10</span></td>
+          <td><div class="field-name">Birth Date</div></td>
+          <td><div class="field-desc">Patient date of birth.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-10%20UB-04.jpg" alt="UB-04 FL 10" onclick="openModal(this,'FL 10 — Birth Date')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 11</span></td>
+          <td><div class="field-name">Sex</div></td>
+          <td><div class="field-desc">Patient gender.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-11%20UB-04.jpg" alt="UB-04 FL 11" onclick="openModal(this,'FL 11 — Sex')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 12–15</span></td>
+          <td><div class="field-name">Admission Information</div></td>
+          <td><div class="field-desc">Admission date, hour, type, and source.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-12-15%20UB-04.jpg" alt="UB-04 FL 12-15" onclick="openModal(this,'FL 12–15 — Admission Information')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 16–17</span></td>
+          <td><div class="field-name">Discharge Status</div></td>
+          <td><div class="field-desc">Patient discharge information.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-16-17%20%20UB-04.jpg" alt="UB-04 FL 16-17" onclick="openModal(this,'FL 16–17 — Discharge Status')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 18–28</span></td>
+          <td><div class="field-name">Condition Codes</div></td>
+          <td><div class="field-desc">Codes related to patient condition.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-18-28%20%20UB-04.jpg" alt="UB-04 FL 18-28" onclick="openModal(this,'FL 18–28 — Condition Codes')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 29</span></td>
+          <td><div class="field-name">Accident State</div></td>
+          <td><div class="field-desc">State where accident occurred.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-29%20%20UB-04.jpg" alt="UB-04 FL 29" onclick="openModal(this,'FL 29 — Accident State')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 30</span></td>
+          <td><div class="field-name">Reserved</div></td>
+          <td><div class="field-desc">Not used — leave blank.</div></td>
+          <td class="thumb-cell"><div class="no-img">Not used</div></td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 31–34</span></td>
+          <td><div class="field-name">Occurrence Codes</div></td>
+          <td><div class="field-desc">Dates related to significant events.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-31-34%20%20UB-04.jpg" alt="UB-04 FL 31-34" onclick="openModal(this,'FL 31–34 — Occurrence Codes')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 35–36</span></td>
+          <td><div class="field-name">Occurrence Span Codes</div></td>
+          <td><div class="field-desc">From–through dates for span events.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-35-36%20%20UB-04.jpg" alt="UB-04 FL 35-36" onclick="openModal(this,'FL 35–36 — Occurrence Span Codes')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 38</span></td>
+          <td><div class="field-name">Responsible Party</div></td>
+          <td><div class="field-desc">Party responsible for claim.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-38%20%20UB-04.jpg" alt="UB-04 FL 38" onclick="openModal(this,'FL 38 — Responsible Party')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 39–41</span></td>
+          <td><div class="field-name">Value Codes</div></td>
+          <td><div class="field-desc">Value codes and associated amounts.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-39-41%20UB-04.jpg" alt="UB-04 FL 39-41" onclick="openModal(this,'FL 39–41 — Value Codes')">
+          </td>
+        </tr>
+
+        
+        <tr class="section-divider" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-500:var(--ub-500);">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ub-700);padding:10px 16px;">
+            💊 Revenue Codes &amp; Service Lines — FL 42–49
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 42</span></td>
+          <td><div class="field-name">Revenue Code</div></td>
+          <td><div class="field-desc">Revenue code, procedure code, units, and charges.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-42%20UB-04.jpg" alt="UB-04 FL 42" onclick="openModal(this,'FL 42 — Revenue Code')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 43</span></td>
+          <td><div class="field-name">Revenue Description</div></td>
+          <td><div class="field-desc">Revenue/charge details continued.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-43%20UB-04.jpg" alt="UB-04 FL 43" onclick="openModal(this,'FL 43 — Revenue Description')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 44</span></td>
+          <td><div class="field-name">HCPCS / Rate</div></td>
+          <td><div class="field-desc">Further revenue/charge details.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-44%20UB-04.jpg" alt="UB-04 FL 44" onclick="openModal(this,'FL 44 — HCPCS / Rate')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 45</span></td>
+          <td><div class="field-name">Service Date</div></td>
+          <td><div class="field-desc">Date of service for each revenue line.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-45%20UB-04.jpg" alt="UB-04 FL 45" onclick="openModal(this,'FL 45 — Service Date')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 46</span></td>
+          <td><div class="field-name">Service Units</div></td>
+          <td><div class="field-desc">Units of service per revenue line.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-46%20UB-04.jpg" alt="UB-04 FL 46" onclick="openModal(this,'FL 46 — Service Units')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 47</span></td>
+          <td><div class="field-name">Total Charges</div></td>
+          <td><div class="field-desc">Total charges per revenue line.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-47%20UB-04.jpg" alt="UB-04 FL 47" onclick="openModal(this,'FL 47 — Total Charges per Line')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 49</span></td>
+          <td><div class="field-name">Totals &amp; Payer</div></td>
+          <td><div class="field-desc">Total charges, payments, balance, and payer information.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-49%20UB-04.jpg" alt="UB-04 FL 49" onclick="openModal(this,'FL 49 — Totals & Payer')">
+          </td>
+        </tr>
+
+        
+        <tr class="section-divider" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-500:var(--ub-500);">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ub-700);padding:10px 16px;">
+            💳 Payer &amp; Insured Information — FL 50–65
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 50</span></td>
+          <td><div class="field-name">Payer Name</div></td>
+          <td><div class="field-desc">Name of the payer (primary, secondary, tertiary).</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-50%20UB-04.jpg" alt="UB-04 FL 50" onclick="openModal(this,'FL 50 — Payer Name')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 51</span></td>
+          <td><div class="field-name">Health Plan ID</div></td>
+          <td><div class="field-desc">Health plan ID number for the payer.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-51%20UB-04.jpg" alt="UB-04 FL 51" onclick="openModal(this,'FL 51 — Health Plan ID')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 52–53</span></td>
+          <td><div class="field-name">Release of Information</div></td>
+          <td><div class="field-desc">Authorization and assignment of benefits.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-52-53%20UB-04.jpg" alt="UB-04 FL 52-53" onclick="openModal(this,'FL 52–53 — Release of Information')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 54</span></td>
+          <td><div class="field-name">Prior Payments</div></td>
+          <td><div class="field-desc">Prior payments received by payer.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-54%20UB-04.jpg" alt="UB-04 FL 54" onclick="openModal(this,'FL 54 — Prior Payments')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 55</span></td>
+          <td><div class="field-name">Estimated Amount Due</div></td>
+          <td><div class="field-desc">Estimated amount due from each payer.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-55%20UB-04.jpg" alt="UB-04 FL 55" onclick="openModal(this,'FL 55 — Estimated Amount Due')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 56–57</span></td>
+          <td><div class="field-name">Provider Identifiers</div></td>
+          <td><div class="field-desc">NPI and other provider identifiers.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-56-57%20UB-04.jpg" alt="UB-04 FL 56-57" onclick="openModal(this,'FL 56–57 — Provider Identifiers')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 58</span></td>
+          <td><div class="field-name">Insured Name</div></td>
+          <td><div class="field-desc">Name of the insured.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-58%20UB-04.jpg" alt="UB-04 FL 58" onclick="openModal(this,'FL 58 — Insured Name')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 59</span></td>
+          <td><div class="field-name">Patient Relationship</div></td>
+          <td><div class="field-desc">Relationship to insured, patient ID, group.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-59%20UB-04.jpg" alt="UB-04 FL 59" onclick="openModal(this,'FL 59 — Patient Relationship')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 60</span></td>
+          <td><div class="field-name">Insured Unique ID</div></td>
+          <td><div class="field-desc">Insurance member ID number.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-60%20UB-04.jpg" alt="UB-04 FL 60" onclick="openModal(this,'FL 60 — Insured Unique ID')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 61</span></td>
+          <td><div class="field-name">Group Name</div></td>
+          <td><div class="field-desc">Insurance group name.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-61%20UB-04.jpg" alt="UB-04 FL 61" onclick="openModal(this,'FL 61 — Group Name')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 62</span></td>
+          <td><div class="field-name">Group Number</div></td>
+          <td><div class="field-desc">Insurance group number.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-62%20UB-04.jpg" alt="UB-04 FL 62" onclick="openModal(this,'FL 62 — Group Number')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 63</span></td>
+          <td><div class="field-name">Authorization Code</div></td>
+          <td><div class="field-desc">Prior authorization number.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-63%20UB-04.jpg" alt="UB-04 FL 63" onclick="openModal(this,'FL 63 — Authorization Code')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 64</span></td>
+          <td><div class="field-name">Document Control #</div></td>
+          <td><div class="field-desc">ICN/DCN claim number.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-64%20UB-04.jpg" alt="UB-04 FL 64" onclick="openModal(this,'FL 64 — Document Control #')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 65</span></td>
+          <td><div class="field-name">Employer Name</div></td>
+          <td><div class="field-desc">Employer information for the insured.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-65%20UB-04.jpg" alt="UB-04 FL 65" onclick="openModal(this,'FL 65 — Employer Name')">
+          </td>
+        </tr>
+
+        
+        <tr class="section-divider" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-500:var(--ub-500);">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ub-700);padding:10px 16px;">
+            🔬 Diagnosis &amp; Procedure Codes — FL 66–75
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 66</span></td>
+          <td><div class="field-name">ICD Version</div></td>
+          <td><div class="field-desc">Diagnosis coding version indicator.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-66%20UB-04.jpg" alt="UB-04 FL 66" onclick="openModal(this,'FL 66 — ICD Version')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 67</span></td>
+          <td><div class="field-name">Principal Diagnosis</div></td>
+          <td><div class="field-desc">Principal diagnosis with Present on Admission (POA) indicator.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-67%20UB-04.jpg" alt="UB-04 FL 67" onclick="openModal(this,'FL 67 — Principal Diagnosis')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 67A–Q</span></td>
+          <td><div class="field-name">Other Diagnoses</div></td>
+          <td><div class="field-desc">Additional ICD diagnosis codes (A through Q).</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-67%20A-Q%20UB-04.jpg" alt="UB-04 FL 67 A-Q" onclick="openModal(this,'FL 67A–Q — Other Diagnoses')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 69</span></td>
+          <td><div class="field-name">Admitting Diagnosis</div></td>
+          <td><div class="field-desc">ICD diagnosis code at time of admission.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-69%20UB-04.jpg" alt="UB-04 FL 69" onclick="openModal(this,'FL 69 — Admitting Diagnosis')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 70</span></td>
+          <td><div class="field-name">Patient's Reason for Visit</div></td>
+          <td><div class="field-desc">ICD diagnosis code for outpatient visit reason.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-70%20UB-04.jpg" alt="UB-04 FL 70" onclick="openModal(this,'FL 70 — Patient\'s Reason for Visit')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 71</span></td>
+          <td><div class="field-name">PPS Code</div></td>
+          <td><div class="field-desc">Prospective Payment System (PPS) code.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-71%20UB-04.jpg" alt="UB-04 FL 71" onclick="openModal(this,'FL 71 — PPS Code')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 72</span></td>
+          <td><div class="field-name">External Cause of Injury</div></td>
+          <td><div class="field-desc">External Cause of Injury (ECI) code.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-72%20UB-04.jpg" alt="UB-04 FL 72" onclick="openModal(this,'FL 72 — External Cause of Injury')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 74</span></td>
+          <td><div class="field-name">Procedures</div></td>
+          <td><div class="field-desc">Principal and other procedure codes with dates.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-74%20UB-04.jpg" alt="UB-04 FL 74" onclick="openModal(this,'FL 74 — Procedures')">
+          </td>
+        </tr>
+
+        
+        <tr class="section-divider" style="--active-50:var(--ub-50);--active-100:var(--ub-100);--active-500:var(--ub-500);">
+          <td colspan="4" style="font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ub-700);padding:10px 16px;">
+            👨‍⚕️ Provider Information — FL 76–81
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 76</span></td>
+          <td><div class="field-name">Attending Provider</div></td>
+          <td><div class="field-desc">Attending provider's NPI and name.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-76%20UB-04.jpg" alt="UB-04 FL 76" onclick="openModal(this,'FL 76 — Attending Provider')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 77</span></td>
+          <td><div class="field-name">Operating Physician</div></td>
+          <td><div class="field-desc">Operating physician's NPI and name.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-77%20UB-04.jpg" alt="UB-04 FL 77" onclick="openModal(this,'FL 77 — Operating Physician')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 78–79</span></td>
+          <td><div class="field-name">Other Providers</div></td>
+          <td><div class="field-desc">Other physician / provider identifiers.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-78-79%20UB-04.jpg" alt="UB-04 FL 78-79" onclick="openModal(this,'FL 78–79 — Other Providers')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 80</span></td>
+          <td><div class="field-name">Remarks</div></td>
+          <td><div class="field-desc">Notes or attachment indicators.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-80%20UB-04.jpg" alt="UB-04 FL 80" onclick="openModal(this,'FL 80 — Remarks')">
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="box-id">FL 81</span></td>
+          <td><div class="field-name">Code-Code Field</div></td>
+          <td><div class="field-desc">Additional coding qualifiers.</div></td>
+          <td class="thumb-cell">
+            <img class="thumb" src="https://raw.githubusercontent.com/kunalvaish49-cpu/VisualCode_UB-04/b39d3afe093b6896ed72d28928d7932e541acc92/FL-81%20UB-04.jpg" alt="UB-04 FL 81" onclick="openModal(this,'FL 81 — Code-Code Field')">
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div><!-- /ub-panel -->
+
+
+<!-- ═══════════════════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+    <span><strong>Medical Billing Reference</strong></span>
+    <span style="opacity:.3">·</span>
+    <span>CMS-1500 &amp; UB-04 Field Guide</span>
+    <span style="opacity:.3">·</span>
+    <span style="color:var(--opt-text);background:var(--opt-bg);border:1px solid var(--opt-border);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">For Professional Use Only</span>
+    <span style="opacity:.3">·</span>
+    <span>Not a substitute for official payer guidelines</span>
+  </div>
+</footer>
+
+<!-- Dark Mode FAB -->
+<button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   SCROLL TOOLBAR SHADOW
+═══════════════════════════════════════════════════ */
+window.addEventListener("scroll", () => {
+  const t = document.querySelector(".toolbar");
+  if (t) t.classList.toggle("scrolled", window.scrollY > 60);
+}, { passive: true });
+
+/* ═══════════════════════════════════════════════════
+   PANEL SWITCHING
+═══════════════════════════════════════════════════ */
+function switchPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById(id + '-panel').classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+
+  // Update active CSS vars
+  const root = document.documentElement;
+  if (id === 'cms') {
+    root.style.setProperty('--active-50',  'var(--cms-50)');
+    root.style.setProperty('--active-100', 'var(--cms-100)');
+    root.style.setProperty('--active-200', 'var(--cms-200)');
+    root.style.setProperty('--active-300', 'var(--cms-300)');
+    root.style.setProperty('--active-500', 'var(--cms-500)');
+    root.style.setProperty('--active-600', 'var(--cms-600)');
+    root.style.setProperty('--active-700', 'var(--cms-700)');
+    root.style.setProperty('--active-900', 'var(--cms-900)');
+  } else {
+    root.style.setProperty('--active-50',  'var(--ub-50)');
+    root.style.setProperty('--active-100', 'var(--ub-100)');
+    root.style.setProperty('--active-200', 'var(--ub-200)');
+    root.style.setProperty('--active-300', 'var(--ub-300)');
+    root.style.setProperty('--active-500', 'var(--ub-500)');
+    root.style.setProperty('--active-600', 'var(--ub-600)');
+    root.style.setProperty('--active-700', 'var(--ub-700)');
+    root.style.setProperty('--active-900', 'var(--ub-900)');
+  }
+
+  // Reset search
+  document.getElementById('searchInput').value = '';
+  doSearch();
+}
+
+/* ═══════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════ */
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  const qUp = q.toUpperCase();
+  const activePanel = document.querySelector('.panel.active');
+  if (!activePanel) return;
+
+  const rows = activePanel.querySelectorAll('tbody tr');
+  let visible = 0;
+
+  rows.forEach(r => {
+    if (r.querySelector('td[colspan]')) { // section divider
+      r.style.display = q ? 'none' : '';
+      return;
+    }
+    const match = !q || r.innerText.toUpperCase().includes(qUp);
+    r.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+
+  const total = [...rows].filter(r => !r.querySelector('td[colspan]')).length;
+  const countEl = document.getElementById('resultCount');
+  countEl.textContent = q ? `${visible} of ${total} matches` : `${total} fields`;
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  doSearch();
+  document.getElementById('searchInput').focus();
+}
+
+// Copy field info to clipboard
+function copyField(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '⎘ Copy';
+    }, 1600);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL / LIGHTBOX
+═══════════════════════════════════════════════════ */
+let imgScale = 1;
+
+function openModal(imgEl, title) {
+  const modal   = document.getElementById('imgModal');
+  const modalImg = document.getElementById('modalImg');
+  const modalTitle = document.getElementById('modalTitle');
+
+  modalImg.src = imgEl.src;
+  modalImg.alt = imgEl.alt;
+  modalTitle.textContent = title || imgEl.alt || 'Form Reference';
+  imgScale = 1;
+  modalImg.style.transform = 'scale(1)';
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('imgModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function zoomIn()    { imgScale = Math.min(imgScale + 0.25, 4); applyZoom(); }
+function zoomOut()   { imgScale = Math.max(imgScale - 0.25, 0.4); applyZoom(); }
+function resetZoom() { imgScale = 1; applyZoom(); }
+function applyZoom() { document.getElementById('modalImg').style.transform = `scale(${imgScale})`; }
+
+// Click outside image to close
+document.getElementById('imgModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Mouse-wheel zoom inside modal
+document.getElementById('imgModal').addEventListener('wheel', function(e) {
+  e.preventDefault();
+  e.deltaY < 0 ? zoomIn() : zoomOut();
+}, { passive: false });
+
+// Keyboard
+document.addEventListener('keydown', function(e) {
+  const modal = document.getElementById('imgModal');
+  if (modal.classList.contains('open')) {
+    if (e.key === 'Escape')          closeModal();
+    if (e.key === '+' || e.key === '=') zoomIn();
+    if (e.key === '-')               zoomOut();
+    if (e.key === '0')               resetZoom();
+    return;
+  }
+  // Global shortcuts
+  if (e.key === 'Escape') clearSearch();
+  if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+    document.getElementById('searchInput').select();
+  }
+});
+
+/* ═══════════════════════════════════════════════════
+   DARK MODE
+═══════════════════════════════════════════════════ */
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  document.getElementById('darkToggle').textContent =
+    document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  // Set initial active CSS vars for --active-200 and --active-600
+  const root = document.documentElement;
+  root.style.setProperty('--active-200', 'var(--cms-200)');
+  root.style.setProperty('--active-600', 'var(--cms-600)');
+  doSearch(); // initialize count
+});
+</script>
+
+</body>
+</html>
